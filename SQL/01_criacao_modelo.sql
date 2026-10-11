@@ -1,35 +1,27 @@
 -- Modelo dimensional: análise de vendas
+-- Fonte prevista: Microsoft Financial Sample
 -- Banco de dados: MySQL 8+
--- Status: estrutura proposta, ainda não validada por execução.
+-- Status: script proposto, ainda não executado.
 
 CREATE DATABASE IF NOT EXISTS vendas_dw;
 USE vendas_dw;
 
 CREATE TABLE IF NOT EXISTS D_PRODUTOS (
     ProdutoKey INT AUTO_INCREMENT PRIMARY KEY,
-    CodigoProduto VARCHAR(50) NOT NULL UNIQUE,
-    NomeProduto VARCHAR(150)
-);
-
-CREATE TABLE IF NOT EXISTS D_PRODUTOS_DETALHES (
-    ProdutoDetalheKey INT AUTO_INCREMENT PRIMARY KEY,
-    CodigoProduto VARCHAR(50) NOT NULL UNIQUE,
-    Segmento VARCHAR(100),
-    Categoria VARCHAR(100)
-);
-
-CREATE TABLE IF NOT EXISTS D_DESCONTOS (
-    DescontoKey INT AUTO_INCREMENT PRIMARY KEY,
-    FaixaDesconto VARCHAR(50) NOT NULL UNIQUE,
-    PercentualDesconto DECIMAL(5,2)
+    Produto VARCHAR(100) NOT NULL UNIQUE,
+    ManufacturingPrice DECIMAL(12,2)
 );
 
 CREATE TABLE IF NOT EXISTS D_DETALHES (
     DetalheKey INT AUTO_INCREMENT PRIMARY KEY,
-    Pais VARCHAR(100),
-    Regiao VARCHAR(100),
-    Estado VARCHAR(100),
-    Cidade VARCHAR(100)
+    Segment VARCHAR(50) NOT NULL,
+    Country VARCHAR(100) NOT NULL,
+    UNIQUE (Segment, Country)
+);
+
+CREATE TABLE IF NOT EXISTS D_DESCONTOS (
+    DescontoKey INT AUTO_INCREMENT PRIMARY KEY,
+    DiscountBand VARCHAR(30) NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS D_CALENDARIO (
@@ -48,34 +40,36 @@ CREATE TABLE IF NOT EXISTS D_CALENDARIO (
 CREATE TABLE IF NOT EXISTS F_VENDAS (
     VendaKey BIGINT AUTO_INCREMENT PRIMARY KEY,
     ProdutoKey INT NOT NULL,
-    ProdutoDetalheKey INT NOT NULL,
-    DescontoKey INT NOT NULL,
     DetalheKey INT NOT NULL,
+    DescontoKey INT NOT NULL,
     DataKey INT NOT NULL,
-    Quantidade INT NOT NULL DEFAULT 0,
-    ValorVenda DECIMAL(12,2),
-    ValorDesconto DECIMAL(12,2),
+    UnitsSold DECIMAL(12,2) NOT NULL,
+    SalePrice DECIMAL(12,2),
+    GrossSales DECIMAL(14,2),
+    Discounts DECIMAL(14,2),
+    Sales DECIMAL(14,2),
+    COGS DECIMAL(14,2),
+    Profit DECIMAL(14,2),
 
     FOREIGN KEY (ProdutoKey)
         REFERENCES D_PRODUTOS(ProdutoKey),
 
-    FOREIGN KEY (ProdutoDetalheKey)
-        REFERENCES D_PRODUTOS_DETALHES(ProdutoDetalheKey),
+    FOREIGN KEY (DetalheKey)
+        REFERENCES D_DETALHES(DetalheKey),
 
     FOREIGN KEY (DescontoKey)
         REFERENCES D_DESCONTOS(DescontoKey),
-
-    FOREIGN KEY (DetalheKey)
-        REFERENCES D_DETALHES(DetalheKey),
 
     FOREIGN KEY (DataKey)
         REFERENCES D_CALENDARIO(DataKey)
 );
 
 -- Granularidade proposta:
--- uma linha por registro de venda ou item vendido.
+-- um registro por linha da fonte Financial Sample.
 --
--- IMPORTANTE:
--- nomes de campos e relacionamentos são provisórios.
--- Devem ser conferidos com a fonte de dados antes da carga.
--- Este script ainda não foi executado nem validado no MySQL.
+-- A carga dos dados e a validação das chaves estrangeiras
+-- deverão ser implementadas após importar e conferir a fonte.
+--
+-- Month Number, Month Name e Year são atributos de calendário
+-- que podem ser derivados da coluna Date.
+-- Não são dimensões independentes.
