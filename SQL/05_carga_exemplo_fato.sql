@@ -1,19 +1,40 @@
+```sql
 -- Carga da tabela fato de vendas
 -- Fonte esperada: financial_sample
 -- MySQL 8+
 -- Status: script proposto, ainda não executado.
 --
--- Pré-requisitos:
--- 1. Executar sql/01_criacao_modelo.sql.
--- 2. Executar sql/02_popular_dimensao_data.sql.
--- 3. Importar a fonte para financial_sample.
--- 4. Executar sql/03_carga_dimensoes.sql.
---
 -- ATENÇÃO:
--- Este script substitui o conteúdo atual da tabela fato.
--- Execute somente após conferir a fonte e as dimensões.
+-- A carga substitui os registros existentes em F_VENDAS.
+-- Confira a fonte e as dimensões antes de executar.
 
 USE vendas_dw;
+
+-- 1. Conferir quantas linhas existem na origem
+SELECT COUNT(*) AS total_origem
+FROM financial_sample;
+
+-- 2. Identificar registros sem correspondência nas dimensões
+SELECT COUNT(*) AS registros_sem_correspondencia
+FROM financial_sample src
+LEFT JOIN D_PRODUTOS p
+    ON p.Produto = src.Product
+LEFT JOIN D_DETALHES det
+    ON det.Segment = src.Segment
+   AND det.Country = src.Country
+LEFT JOIN D_DESCONTOS descnt
+    ON descnt.DiscountBand = src.`Discount Band`
+LEFT JOIN D_CALENDARIO cal
+    ON cal.DataCompleta = DATE(src.Date)
+WHERE p.ProdutoKey IS NULL
+   OR det.DetalheKey IS NULL
+   OR descnt.DescontoKey IS NULL
+   OR cal.DataKey IS NULL;
+
+-- 3. Inserir somente após verificar que não há
+-- registros sem correspondência na consulta anterior.
+-- Se o resultado for maior que zero, investigue antes
+-- de continuar. Não execute a carga sem corrigir a causa.
 
 START TRANSACTION;
 
@@ -53,11 +74,9 @@ JOIN D_DETALHES det
 JOIN D_DESCONTOS descnt
     ON descnt.DiscountBand = src.`Discount Band`
 JOIN D_CALENDARIO cal
-    ON cal.DataCompleta = src.Date;
+    ON cal.DataCompleta = DATE(src.Date);
 
-COMMIT;
-
--- Conferência resumida da tabela fato
+-- 4. Conferir o resultado da carga
 SELECT
     COUNT(*) AS total_registros,
     SUM(UnitsSold) AS total_unidades,
@@ -67,3 +86,6 @@ SELECT
     SUM(COGS) AS custo_das_vendas,
     SUM(Profit) AS lucro_total
 FROM F_VENDAS;
+
+COMMIT;
+```
