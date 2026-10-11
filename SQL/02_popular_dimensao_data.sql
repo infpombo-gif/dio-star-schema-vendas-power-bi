@@ -1,12 +1,12 @@
 -- População da dimensão calendário
--- MySQL 8+
--- Status: script proposto, ainda não validado por execução.
+-- Banco de dados: MySQL 8+
+-- Status: script proposto, ainda não executado.
+--
+-- O período abaixo corresponde ao intervalo esperado
+-- da base Microsoft Financial Sample.
+-- Confirmar as datas após importar a fonte.
 
 USE vendas_dw;
-
--- Calendário de 2025 a 2030.
--- O intervalo é ilustrativo e deverá ser ajustado
--- conforme as datas presentes na fonte de vendas.
 
 INSERT INTO D_CALENDARIO (
     DataKey,
@@ -21,13 +21,13 @@ INSERT INTO D_CALENDARIO (
     AnoMes
 )
 WITH RECURSIVE calendario AS (
-    SELECT DATE('2025-01-01') AS data_calendario
+    SELECT DATE('2013-09-01') AS data_calendario
 
     UNION ALL
 
     SELECT DATE_ADD(data_calendario, INTERVAL 1 DAY)
     FROM calendario
-    WHERE data_calendario < '2030-12-31'
+    WHERE data_calendario < '2014-12-01'
 )
 SELECT
     CAST(DATE_FORMAT(data_calendario, '%Y%m%d') AS UNSIGNED),
@@ -38,9 +38,9 @@ SELECT
         WHEN 2 THEN 'Segunda'
         WHEN 3 THEN 'Terca'
         WHEN 4 THEN 'Quarta'
-        WHEN 5 THEN 'Sexta'
-        WHEN 6 THEN 'Sabado'
-        WHEN 7 THEN 'Quarta'
+        WHEN 5 THEN 'Quinta'
+        WHEN 6 THEN 'Sexta'
+        WHEN 7 THEN 'Sabado'
     END,
     MONTH(data_calendario),
     CASE MONTH(data_calendario)
@@ -65,7 +65,7 @@ FROM calendario
 ON DUPLICATE KEY UPDATE
     DataCompleta = VALUES(DataCompleta);
 
--- Validação da dimensão calendário
+-- Validação do calendário
 SELECT
     COUNT(*) AS total_datas,
     MIN(DataCompleta) AS primeira_data,
