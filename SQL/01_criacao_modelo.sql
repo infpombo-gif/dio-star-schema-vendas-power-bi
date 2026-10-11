@@ -73,3 +73,16 @@ CREATE TABLE IF NOT EXISTS F_VENDAS (
 -- Month Number, Month Name e Year são atributos de calendário
 -- que podem ser derivados da coluna Date.
 -- Não são dimensões independentes.
+
+```sql
+-- Decisões e pontos de atenção:
+-- 1. Granularidade: um registro por linha da fonte.
+-- 2. D_DETALHES combina Segment e Country.
+-- 3. A carga da fato deve conferir se todas as linhas
+--    da origem encontraram correspondência nas dimensões.
+-- 4. O intervalo de D_CALENDARIO deve cobrir todas as
+--    datas da fonte Financial Sample.
+-- 5. Conferir tipos, valores nulos e precisão monetária
+--    após importar a fonte para o MySQL.
+-- 6. Este modelo ainda não foi executado nem validado.
+```
