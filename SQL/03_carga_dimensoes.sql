@@ -1,55 +1,41 @@
--- Carga das dimensões a partir do banco relacional de origem.
--- Ajuste o nome do banco de origem conforme sua instalação.
--- Este script pressupõe que as tabelas originais já existem.
+-- Carga das dimensões do modelo de vendas
+-- Banco de dados: MySQL 8+
+-- Status: modelo de referência, ainda não validado por execução.
+--
+-- IMPORTANTE:
+-- A carga definitiva depende da identificação e preparação
+-- da fonte de dados de vendas.
+-- Não são realizadas cargas fictícias neste script.
 
-USE universidade_dw;
+USE vendas_dw;
 
--- Professores
-INSERT INTO DIM_PROFESSOR (idProfessor)
-SELECT DISTINCT p.idProfessor
-FROM universidade.Professor AS p
-WHERE p.idProfessor IS NOT NULL
-ON DUPLICATE KEY UPDATE
-    idProfessor = VALUES(idProfessor);
+-- As tabelas dimensionais são criadas em:
+-- sql/01_criacao_modelo.sql
+--
+-- A dimensão calendário é preparada em:
+-- sql/02_popular_dimensao_data.sql
+--
+-- Próximas etapas:
+-- 1. Identificar a fonte de dados de vendas.
+-- 2. Conferir os nomes e tipos das colunas disponíveis.
+-- 3. Definir o mapeamento dos campos para cada dimensão.
+-- 4. Implementar a carga das dimensões com base nos dados reais.
+-- 5. Validar chaves, duplicidades e registros sem correspondência.
 
--- Disciplinas
-INSERT INTO DIM_DISCIPLINA (idDisciplina)
-SELECT DISTINCT d.idDisciplina
-FROM universidade.Disciplina AS d
-WHERE d.idDisciplina IS NOT NULL
-ON DUPLICATE KEY UPDATE
-    idDisciplina = VALUES(idDisciplina);
+-- Verificação estrutural: quantidade de registros em cada dimensão.
+-- Os resultados serão zero caso as tabelas ainda estejam vazias.
 
--- Cursos
-INSERT INTO DIM_CURSO (idCurso)
-SELECT DISTINCT c.idCurso
-FROM universidade.Curso AS c
-WHERE c.idCurso IS NOT NULL
-ON DUPLICATE KEY UPDATE
-    idCurso = VALUES(idCurso);
-
--- Departamentos
-INSERT INTO DIM_DEPARTAMENTO (
-    idDepartamento,
-    Nome,
-    Campus
-)
-SELECT DISTINCT
-    dep.idDepartamento,
-    dep.Nome,
-    dep.Campus
-FROM universidade.Departamento AS dep
-WHERE dep.idDepartamento IS NOT NULL
-ON DUPLICATE KEY UPDATE
-    Nome = VALUES(Nome),
-    Campus = VALUES(Campus);
-
--- Verificação da quantidade de registros carregados
-SELECT 'DIM_PROFESSOR' AS dimensao, COUNT(*) AS total
-FROM DIM_PROFESSOR
+SELECT 'D_PRODUTOS' AS dimensao, COUNT(*) AS total
+FROM D_PRODUTOS
 UNION ALL
-SELECT 'DIM_DISCIPLINA', COUNT(*) FROM DIM_DISCIPLINA
+SELECT 'D_PRODUTOS_DETALHES', COUNT(*)
+FROM D_PRODUTOS_DETALHES
 UNION ALL
-SELECT 'DIM_CURSO', COUNT(*) FROM DIM_CURSO
+SELECT 'D_DESCONTOS', COUNT(*)
+FROM D_DESCONTOS
 UNION ALL
-SELECT 'DIM_DEPARTAMENTO', COUNT(*) FROM DIM_DEPARTAMENTO;
+SELECT 'D_DETALHES', COUNT(*)
+FROM D_DETALHES
+UNION ALL
+SELECT 'D_CALENDARIO', COUNT(*)
+FROM D_CALENDARIO;
