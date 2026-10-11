@@ -1,33 +1,30 @@
-# Star Schema para Análise de Professores — DIO
+# Star Schema para Análise de Vendas — DIO
 
-Projeto de modelagem dimensional desenvolvido como parte de um desafio da DIO, com foco na análise da atuação dos professores, disciplinas ministradas, cursos, departamentos e períodos.
+Projeto de modelagem dimensional inspirado nos conceitos de Star Schema estudados na DIO, aplicado à análise de vendas com base no conjunto de dados Microsoft Financial Sample.
 
-O repositório contém a proposta do esquema em estrela, scripts SQL, documentação técnica e dados fictícios para demonstração. A implementação e a validação em MySQL e Power BI permanecem pendentes.
+O repositório reúne a proposta conceitual do modelo, a documentação técnica, um diagrama e scripts SQL para criação, carga e validação.
 
-## Status do projeto
+## Objetivo
 
-### Concluído no GitHub
-- Documentação da proposta de modelagem dimensional.
-- Estrutura SQL proposta para as dimensões e a tabela fato.
-- Script proposto para criação da dimensão calendário.
-- Documentação das decisões e premissas de modelagem.
-- Diagrama conceitual do Star Schema.
-- Arquivo CSV com dados fictícios para demonstração.
+Organizar os dados de vendas em uma tabela fato e dimensões, permitindo análises por produto, segmento, país, faixa de desconto e período.
 
-### Pendente
-- Validar os nomes e tipos das colunas no banco de origem.
-- Executar e testar os scripts SQL em um servidor MySQL.
-- Validar a granularidade e a carga da tabela fato.
-- Configurar e testar os relacionamentos no Power BI.
-- Criar visualizações para análise da atuação dos professores.
+## Modelo dimensional
 
-### Limitações
-O diagrama original não apresenta datas de oferta nem carga horária. Os dados do CSV são fictícios e servem somente para demonstração. O modelo ainda não foi executado nem validado em um ambiente de banco de dados ou Power BI.
+### Tabela fato
+
+- `F_VENDAS`: concentra as métricas de vendas, custos, descontos, unidades vendidas e lucro.
+
+### Dimensões
+
+- `D_PRODUTOS`: informações sobre produtos e preço de fabricação.
+- `D_DETALHES`: segmento de mercado e país.
+- `D_DESCONTOS`: faixa de desconto.
+- `D_CALENDARIO`: atributos temporais para análise das vendas.
 
 ## Estrutura do repositório
 
 ```text
-dio-star-schema-professores-power-bi/
+dio-star-schema-vendas-power-bi/
 ├── README.md
 ├── modelo_star_schema.md
 ├── dados/
@@ -46,26 +43,3 @@ dio-star-schema-professores-power-bi/
     ├── 04_validacao_origem.sql
     ├── 05_carga_exemplo_fato.sql
     └── 06_validacao_modelo.sql
-```
-
-## Como navegar pelo projeto
-
-1. Consulte `modelo_star_schema.md` para entender a proposta conceitual.
-2. Consulte `documentacao/diagrama_star_schema.mmd` para visualizar as relações entre fato e dimensões.
-3. Leia `documentacao/decisoes_modelagem.md` e `documentacao/revisao_tecnica.md` para conhecer as premissas.
-4. Confira `dados/exemplo_modelo.csv` para visualizar os registros fictícios.
-5. Consulte os scripts da pasta `sql/` para acompanhar a estrutura, a carga e as validações propostas.
-
-## Ordem sugerida dos scripts SQL
-
-1. `01_criacao_modelo.sql`
-2. `02_popular_dimensao_data.sql`
-3. `05_carga_exemplo_fato.sql` para a demonstração com dados fictícios.
-4. `06_validacao_modelo.sql` para as verificações.
-5. `03_carga_dimensoes.sql` e `04_validacao_origem.sql` somente após ajustar os nomes do schema e confirmar a estrutura real da origem.
-
-**Atenção:** os scripts ainda não foram executados nem testados. A ordem acima é uma referência de trabalho, não uma confirmação de execução bem-sucedida.
-
-## Limitações conhecidas
-
-O modelo relacional de origem não fornece datas de oferta nem carga horária. Os registros demonstrativos são fictícios e não devem ser interpretados como dados históricos reais. A implementação no MySQL e a configuração do modelo no Power BI permanecem pendentes.
