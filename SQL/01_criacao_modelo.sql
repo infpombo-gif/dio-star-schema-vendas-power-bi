@@ -1,33 +1,38 @@
--- Modelo dimensional: análise da atuação dos professores
+-- Modelo dimensional: análise de vendas
 -- Banco de dados: MySQL 8+
--- Observação: estrutura proposta; dados e datas ainda precisam ser preparados.
+-- Status: estrutura proposta, ainda não validada por execução.
 
-CREATE DATABASE IF NOT EXISTS universidade_dw;
-USE universidade_dw;
+CREATE DATABASE IF NOT EXISTS vendas_dw;
+USE vendas_dw;
 
-CREATE TABLE IF NOT EXISTS DIM_PROFESSOR (
-    ProfessorKey INT AUTO_INCREMENT PRIMARY KEY,
-    idProfessor INT NOT NULL UNIQUE
+CREATE TABLE IF NOT EXISTS D_PRODUTOS (
+    ProdutoKey INT AUTO_INCREMENT PRIMARY KEY,
+    CodigoProduto VARCHAR(50) NOT NULL UNIQUE,
+    NomeProduto VARCHAR(150)
 );
 
-CREATE TABLE IF NOT EXISTS DIM_DISCIPLINA (
-    DisciplinaKey INT AUTO_INCREMENT PRIMARY KEY,
-    idDisciplina INT NOT NULL UNIQUE
+CREATE TABLE IF NOT EXISTS D_PRODUTOS_DETALHES (
+    ProdutoDetalheKey INT AUTO_INCREMENT PRIMARY KEY,
+    CodigoProduto VARCHAR(50) NOT NULL UNIQUE,
+    Segmento VARCHAR(100),
+    Categoria VARCHAR(100)
 );
 
-CREATE TABLE IF NOT EXISTS DIM_CURSO (
-    CursoKey INT AUTO_INCREMENT PRIMARY KEY,
-    idCurso INT NOT NULL UNIQUE
+CREATE TABLE IF NOT EXISTS D_DESCONTOS (
+    DescontoKey INT AUTO_INCREMENT PRIMARY KEY,
+    FaixaDesconto VARCHAR(50) NOT NULL UNIQUE,
+    PercentualDesconto DECIMAL(5,2)
 );
 
-CREATE TABLE IF NOT EXISTS DIM_DEPARTAMENTO (
-    DepartamentoKey INT AUTO_INCREMENT PRIMARY KEY,
-    idDepartamento INT NOT NULL UNIQUE,
-    Nome VARCHAR(45),
-    Campus VARCHAR(45)
+CREATE TABLE IF NOT EXISTS D_DETALHES (
+    DetalheKey INT AUTO_INCREMENT PRIMARY KEY,
+    Pais VARCHAR(100),
+    Regiao VARCHAR(100),
+    Estado VARCHAR(100),
+    Cidade VARCHAR(100)
 );
 
-CREATE TABLE IF NOT EXISTS DIM_DATA (
+CREATE TABLE IF NOT EXISTS D_CALENDARIO (
     DataKey INT PRIMARY KEY,
     DataCompleta DATE NOT NULL UNIQUE,
     Dia INT NOT NULL,
@@ -40,43 +45,37 @@ CREATE TABLE IF NOT EXISTS DIM_DATA (
     AnoMes CHAR(7) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS FATO_ATUACAO_PROFESSOR (
-    AtuacaoKey BIGINT AUTO_INCREMENT PRIMARY KEY,
-    ProfessorKey INT NOT NULL,
-    DisciplinaKey INT NOT NULL,
-    CursoKey INT NOT NULL,
-    DepartamentoProfessorKey INT NOT NULL,
-    DepartamentoCursoKey INT NOT NULL,
+CREATE TABLE IF NOT EXISTS F_VENDAS (
+    VendaKey BIGINT AUTO_INCREMENT PRIMARY KEY,
+    ProdutoKey INT NOT NULL,
+    ProdutoDetalheKey INT NOT NULL,
+    DescontoKey INT NOT NULL,
+    DetalheKey INT NOT NULL,
     DataKey INT NOT NULL,
-    QuantidadeOfertas INT NOT NULL DEFAULT 1,
+    Quantidade INT NOT NULL DEFAULT 0,
+    ValorVenda DECIMAL(12,2),
+    ValorDesconto DECIMAL(12,2),
 
-    FOREIGN KEY (ProfessorKey)
-        REFERENCES DIM_PROFESSOR(ProfessorKey),
+    FOREIGN KEY (ProdutoKey)
+        REFERENCES D_PRODUTOS(ProdutoKey),
 
-    FOREIGN KEY (DisciplinaKey)
-        REFERENCES DIM_DISCIPLINA(DisciplinaKey),
+    FOREIGN KEY (ProdutoDetalheKey)
+        REFERENCES D_PRODUTOS_DETALHES(ProdutoDetalheKey),
 
-    FOREIGN KEY (CursoKey)
-        REFERENCES DIM_CURSO(CursoKey),
+    FOREIGN KEY (DescontoKey)
+        REFERENCES D_DESCONTOS(DescontoKey),
 
-    FOREIGN KEY (DepartamentoProfessorKey)
-        REFERENCES DIM_DEPARTAMENTO(DepartamentoKey),
-
-    FOREIGN KEY (DepartamentoCursoKey)
-        REFERENCES DIM_DEPARTAMENTO(DepartamentoKey),
+    FOREIGN KEY (DetalheKey)
+        REFERENCES D_DETALHES(DetalheKey),
 
     FOREIGN KEY (DataKey)
-        REFERENCES DIM_DATA(DataKey)
+        REFERENCES D_CALENDARIO(DataKey)
 );
 
--- Granularidade pretendida:
--- uma linha por professor, disciplina, curso e data de oferta.
+-- Granularidade proposta:
+-- uma linha por registro de venda ou item vendido.
 --
--- Atenção:
--- o diagrama original não contém datas de oferta.
--- Os registros da tabela fato só poderão ser inseridos depois
--- de obter ou simular essas datas e preparar os dados de origem.
---
--- DepartamentoProfessorKey representa o departamento do professor.
--- DepartamentoCursoKey representa o departamento responsável pelo curso.
--- São papéis distintos da mesma dimensão.
+-- IMPORTANTE:
+-- nomes de campos e relacionamentos são provisórios.
+-- Devem ser conferidos com a fonte de dados antes da carga.
+-- Este script ainda não foi executado nem validado no MySQL.
