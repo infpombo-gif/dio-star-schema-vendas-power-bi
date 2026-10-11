@@ -1,0 +1,14 @@
+flowchart TB
+    PROF["DIM_PROFESSOR<br/>PK: ProfessorKey<br/>ID original: idProfessor"]
+    DISC["DIM_DISCIPLINA<br/>PK: DisciplinaKey<br/>ID original: idDisciplina"]
+    CURSO["DIM_CURSO<br/>PK: CursoKey<br/>ID original: idCurso"]
+    DEP["DIM_DEPARTAMENTO<br/>PK: DepartamentoKey<br/>ID original: idDepartamento"]
+    DATA["DIM_DATA<br/>PK: DataKey<br/>DataCompleta, mês, trimestre e ano"]
+
+    FATO["FATO_ATUACAO_PROFESSOR<br/>FK: ProfessorKey<br/>FK: DisciplinaKey<br/>FK: CursoKey<br/>FK: DepartamentoKey<br/>FK: DataKey<br/>Medidas: ofertas e carga horária"]
+
+    PROF -->|"1:N"| FATO
+    DISC -->|"1:N"| FATO
+    CURSO -->|"1:N"| FATO
+    DEP -->|"1:N"| FATO
+    DATA -->|"1:N"| FATO
