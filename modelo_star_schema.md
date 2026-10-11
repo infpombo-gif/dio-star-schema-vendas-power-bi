@@ -2,13 +2,13 @@
 
 ## Objetivo
 
-Definir uma proposta de modelo dimensional para análise de vendas, utilizando o esquema estrela (Star Schema) para organizar os dados e facilitar análises de produtos, descontos, segmentos, países, períodos e resultados financeiros.
+Definir uma proposta de modelo dimensional para análise de vendas, utilizando o esquema estrela (*Star Schema*) para organizar os dados e facilitar análises de produtos, descontos, segmentos, países, períodos e resultados financeiros.
 
 ## Granularidade
 
 A granularidade pretendida para a tabela fato é uma linha por registro da fonte Microsoft Financial Sample.
 
-Essa definição deverá ser confirmada durante a importação e a validação dos dados, garantindo que a carga preserve os registros de origem sem duplicações indevidas.
+Essa definição deverá ser confirmada durante a importação e a validação dos dados, garantindo que o carregamento preserve os registros de origem sem duplicações indevidas.
 
 ## Diagrama do modelo
 
@@ -31,7 +31,7 @@ Campos previstos:
 - `SalePrice`: preço de venda.
 - `GrossSales`: valor bruto das vendas.
 - `Discounts`: valor dos descontos.
-- `Sales`: valor das vendas.
+- `Sales`: valor das vendas informado pela fonte.
 - `COGS`: custo dos produtos vendidos.
 - `Profit`: lucro informado pela fonte.
 
@@ -59,10 +59,12 @@ Cada relacionamento deverá ser validado durante a execução dos scripts e, pos
 
 A fonte planejada é o Microsoft Financial Sample. Os scripts pressupõem que seus dados estejam disponíveis em uma tabela chamada `financial_sample` no MySQL.
 
-A dimensão calendário é gerada por um script SQL. Seu intervalo de datas deverá ser comparado com o período efetivamente presente na fonte.
+A dimensão calendário é gerada por um script SQL. Seu intervalo deverá ser comparado com o período efetivamente presente na fonte.
 
-Também será necessário verificar a consistência do preço de fabricação por produto e definir como evitar a duplicação de registros durante cargas repetidas.
+Também será necessário verificar a consistência do preço de fabricação por produto e definir como evitar duplicações durante cargas repetidas.
 
 ## Status do projeto
 
-Este documento descreve uma proposta de modelagem dimensional para análise de vendas. Os scripts SQL ainda precisam ser executados e validados, e a implementação do modelo e dos relatórios no Power BI permanece pendente.
+Este documento descreve uma proposta de modelagem dimensional para análise de vendas. Os scripts SQL estão estruturados como propostas, mas ainda não foram executados nem validados. A implementação do modelo e dos relatórios no Power BI permanece pendente.
+
+O modelo atual possui quatro dimensões e deve ser comparado aos requisitos originais do desafio DIO antes da entrega final.
