@@ -1,20 +1,14 @@
 -- População da dimensão calendário
 -- MySQL 8+
-USE universidade_dw;
+-- Status: script proposto, ainda não validado por execução.
 
--- Exemplo didático: calendário de 2025 a 2030.
--- Estas datas são um intervalo de calendário, não datas reais de oferta.
+USE vendas_dw;
 
-WITH RECURSIVE calendario AS (
-    SELECT DATE('2025-01-01') AS data_calendario
+-- Calendário de 2025 a 2030.
+-- O intervalo é ilustrativo e deverá ser ajustado
+-- conforme as datas presentes na fonte de vendas.
 
-    UNION ALL
-
-    SELECT DATE_ADD(data_calendario, INTERVAL 1 DAY)
-    FROM calendario
-    WHERE data_calendario < '2030-12-31'
-)
-INSERT INTO DIM_DATA (
+INSERT INTO D_CALENDARIO (
     DataKey,
     DataCompleta,
     Dia,
@@ -26,6 +20,15 @@ INSERT INTO DIM_DATA (
     Ano,
     AnoMes
 )
+WITH RECURSIVE calendario AS (
+    SELECT DATE('2025-01-01') AS data_calendario
+
+    UNION ALL
+
+    SELECT DATE_ADD(data_calendario, INTERVAL 1 DAY)
+    FROM calendario
+    WHERE data_calendario < '2030-12-31'
+)
 SELECT
     CAST(DATE_FORMAT(data_calendario, '%Y%m%d') AS UNSIGNED),
     data_calendario,
@@ -35,9 +38,9 @@ SELECT
         WHEN 2 THEN 'Segunda'
         WHEN 3 THEN 'Terca'
         WHEN 4 THEN 'Quarta'
-        WHEN 5 THEN 'Quinta'
-        WHEN 6 THEN 'Sexta'
-        WHEN 7 THEN 'Sabado'
+        WHEN 5 THEN 'Sexta'
+        WHEN 6 THEN 'Sabado'
+        WHEN 7 THEN 'Quarta'
     END,
     MONTH(data_calendario),
     CASE MONTH(data_calendario)
@@ -62,9 +65,9 @@ FROM calendario
 ON DUPLICATE KEY UPDATE
     DataCompleta = VALUES(DataCompleta);
 
--- Validação: deve retornar 2191 dias para o intervalo completo.
+-- Validação da dimensão calendário
 SELECT
     COUNT(*) AS total_datas,
     MIN(DataCompleta) AS primeira_data,
     MAX(DataCompleta) AS ultima_data
-FROM DIM_DATA;
+FROM D_CALENDARIO;
