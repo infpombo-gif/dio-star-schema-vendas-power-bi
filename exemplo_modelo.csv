@@ -1,0 +1,6 @@
+ProfessorID,DisciplinaID,CursoID,DepartamentoProfessor,DepartamentoCurso,DataOferta,QuantidadeOfertas
+1,101,201,10,10,2026-02-10,1
+1,102,201,10,10,2026-03-15,1
+2,101,202,20,10,2026-04-20,1
+3,103,203,20,20,2026-05-05,1
+2,104,204,20,30,2026-06-12,1
