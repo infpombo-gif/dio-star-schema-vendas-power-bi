@@ -1,57 +1,50 @@
-# Modelo Dimensional — Star Schema
+# Modelo Dimensional — Star Schema para Análise de Vendas
 
 ## Objetivo
 
-Construir um modelo dimensional para análise da atuação dos professores, considerando disciplinas ministradas, cursos e departamentos.
+Definir uma proposta de modelo dimensional para análise de vendas, utilizando o esquema estrela (*Star Schema*) como referência para organizar os dados e facilitar futuras análises de produtos, descontos, períodos e resultados comerciais.
 
 ## Granularidade
 
-Cada registro da tabela fato representa uma combinação de professor, disciplina, curso e data de oferta.
+A granularidade proposta para a tabela fato é **uma linha por registro de venda ou item vendido**, conforme a estrutura disponível na fonte de dados. Essa definição deverá ser confirmada durante a implementação.
 
 ## Diagrama do modelo
 
-```mermaid
-flowchart TD
-    P["DIM_PROFESSOR"]
-    D["DIM_DISCIPLINA"]
-    C["DIM_CURSO"]
-    DEP["DIM_DEPARTAMENTO"]
-    DT["DIM_DATA"]
-    F["FATO_ATUACAO_PROFESSOR"]
-
-    P --- F
-    D --- F
-    C --- F
-    DEP --- F
-    DT --- F
-```
+O diagrama do modelo dimensional será documentado em `documentacao/diagrama_star_schema.mmd` e deverá representar a tabela fato central e suas dimensões relacionadas.
 
 ## Tabela fato
 
-**FATO_ATUACAO_PROFESSOR**
+**F_VENDAS**
 
-- ProfessorKey
-- DisciplinaKey
-- CursoKey
-- DepartamentoKey
-- DataKey
-- QuantidadeDisciplinas
-- CargaHoraria
+A tabela fato deverá concentrar os registros de vendas e as métricas utilizadas nas análises.
+
+Campos propostos:
+
+- Chaves das dimensões relacionadas.
+- Quantidade vendida.
+- Valor de venda, quando disponível na fonte.
+- Valor de desconto, quando disponível na fonte.
+- Outras métricas comerciais disponíveis nos dados de origem.
+
+Os nomes e tipos definitivos dos campos deverão ser validados com a fonte de dados utilizada.
 
 ## Dimensões
 
-- **DIM_PROFESSOR:** identificação e informações dos professores.
-- **DIM_DISCIPLINA:** identificação e informações das disciplinas.
-- **DIM_CURSO:** identificação e informações dos cursos.
-- **DIM_DEPARTAMENTO:** nome, campus e identificação do departamento.
-- **DIM_DATA:** data, dia, mês, trimestre, semestre e ano.
+- **D_PRODUTOS:** informações de identificação e classificação dos produtos.
+- **D_PRODUTOS_DETALHES:** atributos complementares dos produtos, conforme os dados disponíveis.
+- **D_DESCONTOS:** informações relacionadas às faixas ou condições de desconto.
+- **D_DETALHES:** informações complementares necessárias para as análises comerciais.
+- **D_CALENDÁRIO:** atributos de data, dia, mês, trimestre, semestre e ano, para permitir análises temporais.
 
 ## Premissas e limitações
 
-O diagrama relacional de origem não apresenta datas de oferta nem carga horária. Esses atributos deverão ser obtidos de uma fonte complementar ou simulados para fins didáticos, com essa condição devidamente documentada.
+A estrutura definitiva das tabelas, seus campos e relacionamentos deverá ser definida a partir da fonte de dados escolhida. Nenhum campo deve ser considerado confirmado antes dessa verificação.
 
-As tabelas de alunos e matrículas foram excluídas por não fazerem parte do foco analítico solicitado no desafio.
+A dimensão calendário poderá ser construída no Power BI com DAX, utilizando a função `CALENDAR()`, após a definição do intervalo de datas.
 
-## Observação
+O relacionamento entre a tabela fato e as dimensões deverá ser validado durante a implementação, garantindo a consistência das chaves e a adequação ao esquema estrela.
 
-Este é o modelo conceitual inicial. Os campos e relacionamentos deverão ser validados antes da implementação definitiva.
+## Status do projeto
+
+Este documento representa uma proposta conceitual de modelagem dimensional para análise de vendas. A implementação no Power BI, a validação dos relacionamentos e a conferência dos resultados ainda precisam ser realizadas.
+
