@@ -1,14 +1,12 @@
 flowchart TD
+    DP["D_PRODUTOS"]
+    DDET["D_DETALHES"]
+    DD["D_DESCONTOS"]
+    DC["D_CALENDARIO"]
+
     FV["F_VENDAS"]
 
-    DP["D_PRODUTOS"]
-    DPD["D_PRODUTOS_DETALHES"]
-    DD["D_DESCONTOS"]
-    DDET["D_DETALHES"]
-    DC["D_CALENDÁRIO"]
-
     DP --> FV
-    DPD --> FV
-    DD --> FV
     DDET --> FV
+    DD --> FV
     DC --> FV
