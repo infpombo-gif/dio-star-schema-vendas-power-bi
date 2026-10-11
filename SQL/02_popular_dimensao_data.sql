@@ -1,10 +1,7 @@
 -- População da dimensão calendário
--- Banco de dados: MySQL 8+
+-- MySQL 8+
 -- Status: script proposto, ainda não executado.
---
--- O período abaixo corresponde ao intervalo esperado
--- da base Microsoft Financial Sample.
--- Confirmar as datas após importar a fonte.
+-- Confirmar o intervalo com a fonte antes da execução.
 
 USE vendas_dw;
 
@@ -35,11 +32,11 @@ SELECT
     DAY(data_calendario),
     CASE DAYOFWEEK(data_calendario)
         WHEN 1 THEN 'Domingo'
-        WHEN 2 THEN 'Segunda'
-        WHEN 3 THEN 'Terca'
-        WHEN 4 THEN 'Quarta'
-        WHEN 5 THEN 'Quinta'
-        WHEN 6 THEN 'Sexta'
+        WHEN 2 THEN 'Segunda-feira'
+        WHEN 3 THEN 'Terca-feira'
+        WHEN 4 THEN 'Quarta-feira'
+        WHEN 5 THEN 'Quinta-feira'
+        WHEN 6 THEN 'Sexta-feira'
         WHEN 7 THEN 'Sabado'
     END,
     MONTH(data_calendario),
