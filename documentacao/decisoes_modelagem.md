@@ -2,40 +2,62 @@
 
 ## Objetivo analítico
 
-O modelo tem como objetivo analisar a atuação dos professores, relacionando-os às disciplinas, aos cursos, aos departamentos e às datas de oferta.
+O modelo tem como objetivo analisar os dados de vendas, permitindo examinar resultados por produto, segmento de mercado, país, faixa de desconto e período.
 
 ## Escolha da tabela fato
 
-A tabela FATO_ATUACAO_PROFESSOR foi proposta para centralizar as informações quantitativas e as chaves das dimensões.
+A tabela F_VENDAS foi proposta para centralizar as métricas financeiras e as chaves estrangeiras das dimensões.
 
-A granularidade inicialmente planejada é uma linha por combinação de professor, disciplina, curso e data de oferta.
+A granularidade pretendida é uma linha para cada registro da fonte de vendas importado para o modelo. Essa granularidade ainda precisa ser confirmada durante a implementação.
 
-## Dimensões selecionadas
+## Dimensões
 
-- **Professor:** permite analisar a atuação individual dos docentes.
-- **Disciplina:** permite identificar as disciplinas ministradas.
-- **Curso:** permite comparar a distribuição das disciplinas entre cursos.
-- **Departamento:** permite agrupar as análises por unidade acadêmica.
-- **Data:** permite analisar a atuação ao longo do tempo.
+- **Produtos (D_PRODUTOS):** permite analisar os resultados por produto e consultar o preço de fabricação informado na fonte.
+- **Detalhes (D_DETALHES):** permite segmentar as análises por segmento de mercado e país.
+- **Descontos (D_DESCONTOS):** permite comparar os resultados entre as diferentes faixas de desconto.
+- **Calendário (D_CALENDARIO):** permite analisar as vendas por dia, mês, trimestre, semestre e ano.
 
-## Dimensão de datas
+## Métricas da tabela fato
 
-Como o diagrama relacional original não apresenta datas de oferta, a dimensão DIM_DATA será criada para disponibilizar atributos temporais, como dia, mês, trimestre, semestre e ano.
+A F_VENDAS contempla os seguintes campos numéricos:
 
-As datas associadas às ofertas deverão vir de uma fonte complementar ou ser simuladas para fins didáticos. Dados simulados devem ser identificados claramente.
+- UnitsSold — unidades vendidas.
+- SalePrice — preço de venda.
+- GrossSales — valor bruto das vendas.
+- Discounts — valor dos descontos.
+- Sales — valor das vendas após os descontos, conforme informado pela fonte.
+- COGS — custo dos produtos vendidos.
+- Profit — lucro informado pela fonte.
 
-## Exclusão de alunos e matrículas
+Os valores serão importados da fonte original. As fórmulas e a consistência entre as métricas ainda precisam ser verificadas.
 
-As tabelas ALUNO e MATRICULADO foram excluídas do modelo porque o desafio solicita que a análise seja centrada nos professores e dispensa informações dos alunos.
+## Dimensão calendário
+
+A dimensão D_CALENDARIO foi planejada para oferecer atributos temporais e facilitar consultas por períodos.
+
+O script de criação prevê datas entre setembro de 2013 e dezembro de 2014. Esse intervalo deve ser comparado com as datas efetivamente existentes na fonte antes da validação final.
+
+## Chaves e relacionamentos
+
+As dimensões utilizam chaves substitutas para identificar seus registros. A tabela fato utiliza essas chaves como referências às dimensões.
+
+Os relacionamentos previstos são:
+
+- D_PRODUTOS → F_VENDAS
+- D_DETALHES → F_VENDAS
+- D_DESCONTOS → F_VENDAS
+- D_CALENDARIO → F_VENDAS
 
 ## Limitações e pontos de atenção
 
-1. O modelo relacional associa professores às disciplinas e disciplinas aos cursos por meio de uma tabela associativa.
-2. O diagrama não apresenta uma tabela de ofertas com datas específicas.
-3. A carga horária não aparece entre os atributos fornecidos no diagrama.
-4. Antes da implementação, é necessário validar como representar disciplinas ministradas em diferentes cursos e períodos sem gerar duplicações indevidas.
-5. As chaves substitutas das dimensões deverão ser criadas durante a preparação dos dados.
+1. A fonte precisa ser importada para a tabela financial_sample antes da execução das cargas.
+2. Os nomes e os tipos de dados das colunas precisam ser conferidos após a importação.
+3. O relacionamento entre produtos e preço de fabricação pressupõe que o preço possa ser associado ao produto sem ambiguidades.
+4. O script de carga da tabela fato precisa de uma estratégia contra duplicações caso seja executado mais de uma vez.
+5. O intervalo da dimensão calendário precisa cobrir todas as datas presentes na fonte.
+6. As chaves estrangeiras e os resultados das consultas de validação precisam ser testados no MySQL.
+7. O modelo ainda não foi validado no Power BI, e nenhum arquivo PBIX foi concluído.
 
 ## Status
 
-Este documento descreve a proposta conceitual. A implementação física, a validação dos relacionamentos e a construção de relatórios no Power BI devem ser realizadas e verificadas antes de serem consideradas concluídas.
+Este documento descreve as decisões previstas para o modelo dimensional de vendas. A implementação física, a execução dos scripts, a validação dos dados e a criação de relatórios ainda precisam ser realizadas e verificadas.
