@@ -2,49 +2,67 @@
 
 ## Objetivo
 
-Definir uma proposta de modelo dimensional para análise de vendas, utilizando o esquema estrela (*Star Schema*) como referência para organizar os dados e facilitar futuras análises de produtos, descontos, períodos e resultados comerciais.
+Definir uma proposta de modelo dimensional para análise de vendas, utilizando o esquema estrela (Star Schema) para organizar os dados e facilitar análises de produtos, descontos, segmentos, países, períodos e resultados financeiros.
 
 ## Granularidade
 
-A granularidade proposta para a tabela fato é **uma linha por registro de venda ou item vendido**, conforme a estrutura disponível na fonte de dados. Essa definição deverá ser confirmada durante a implementação.
+A granularidade pretendida para a tabela fato é uma linha por registro da fonte Microsoft Financial Sample.
+
+Essa definição deverá ser confirmada durante a importação e a validação dos dados, garantindo que a carga preserve os registros de origem sem duplicações indevidas.
 
 ## Diagrama do modelo
 
-O diagrama do modelo dimensional será documentado em `documentacao/diagrama_star_schema.mmd` e deverá representar a tabela fato central e suas dimensões relacionadas.
+O diagrama está documentado em `documentacao/diagrama_star_schema.mmd` e representa a tabela fato central e suas quatro dimensões relacionadas.
 
 ## Tabela fato
 
-**F_VENDAS**
+### F_VENDAS
 
-A tabela fato deverá concentrar os registros de vendas e as métricas utilizadas nas análises.
+A tabela fato foi planejada para centralizar os registros de vendas e suas métricas financeiras.
 
-Campos propostos:
+Campos previstos:
 
-- Chaves das dimensões relacionadas.
-- Quantidade vendida.
-- Valor de venda, quando disponível na fonte.
-- Valor de desconto, quando disponível na fonte.
-- Outras métricas comerciais disponíveis nos dados de origem.
+- `VendaKey`: identificador do registro na tabela fato.
+- `ProdutoKey`: referência à dimensão de produtos.
+- `DetalheKey`: referência à dimensão de detalhes comerciais.
+- `DescontoKey`: referência à dimensão de descontos.
+- `DataKey`: referência à dimensão calendário.
+- `UnitsSold`: quantidade de unidades vendidas.
+- `SalePrice`: preço de venda.
+- `GrossSales`: valor bruto das vendas.
+- `Discounts`: valor dos descontos.
+- `Sales`: valor das vendas.
+- `COGS`: custo dos produtos vendidos.
+- `Profit`: lucro informado pela fonte.
 
-Os nomes e tipos definitivos dos campos deverão ser validados com a fonte de dados utilizada.
+Os campos e seus tipos estão definidos nos scripts SQL propostos, mas ainda precisam ser testados com os dados importados.
 
 ## Dimensões
 
-- **D_PRODUTOS:** informações de identificação e classificação dos produtos.
-- **D_PRODUTOS_DETALHES:** atributos complementares dos produtos, conforme os dados disponíveis.
-- **D_DESCONTOS:** informações relacionadas às faixas ou condições de desconto.
-- **D_DETALHES:** informações complementares necessárias para as análises comerciais.
-- **D_CALENDÁRIO:** atributos de data, dia, mês, trimestre, semestre e ano, para permitir análises temporais.
+- **D_PRODUTOS:** identifica os produtos e armazena o preço de fabricação informado pela fonte.
+- **D_DETALHES:** reúne os atributos de segmento de mercado e país.
+- **D_DESCONTOS:** representa as faixas de desconto.
+- **D_CALENDARIO:** reúne atributos temporais como dia, mês, trimestre, semestre e ano.
 
-## Premissas e limitações
+## Relacionamentos
 
-A estrutura definitiva das tabelas, seus campos e relacionamentos deverá ser definida a partir da fonte de dados escolhida. Nenhum campo deve ser considerado confirmado antes dessa verificação.
+As dimensões foram planejadas para se relacionar com a tabela fato por meio de chaves estrangeiras:
 
-A dimensão calendário poderá ser construída no Power BI com DAX, utilizando a função `CALENDAR()`, após a definição do intervalo de datas.
+- `D_PRODUTOS.ProdutoKey` → `F_VENDAS.ProdutoKey`
+- `D_DETALHES.DetalheKey` → `F_VENDAS.DetalheKey`
+- `D_DESCONTOS.DescontoKey` → `F_VENDAS.DescontoKey`
+- `D_CALENDARIO.DataKey` → `F_VENDAS.DataKey`
 
-O relacionamento entre a tabela fato e as dimensões deverá ser validado durante a implementação, garantindo a consistência das chaves e a adequação ao esquema estrela.
+Cada relacionamento deverá ser validado durante a execução dos scripts e, posteriormente, na configuração do modelo no Power BI.
+
+## Fonte de dados e premissas
+
+A fonte planejada é o Microsoft Financial Sample. Os scripts pressupõem que seus dados estejam disponíveis em uma tabela chamada `financial_sample` no MySQL.
+
+A dimensão calendário é gerada por um script SQL. Seu intervalo de datas deverá ser comparado com o período efetivamente presente na fonte.
+
+Também será necessário verificar a consistência do preço de fabricação por produto e definir como evitar a duplicação de registros durante cargas repetidas.
 
 ## Status do projeto
 
-Este documento representa uma proposta conceitual de modelagem dimensional para análise de vendas. A implementação no Power BI, a validação dos relacionamentos e a conferência dos resultados ainda precisam ser realizadas.
-
+Este documento descreve uma proposta de modelagem dimensional para análise de vendas. Os scripts SQL ainda precisam ser executados e validados, e a implementação do modelo e dos relatórios no Power BI permanece pendente.
