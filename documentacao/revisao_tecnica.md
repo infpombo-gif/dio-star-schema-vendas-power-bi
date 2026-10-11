@@ -1,55 +1,78 @@
-# Revisão Técnica do Star Schema
+# Revisão Técnica do Star Schema de Vendas
 
 ## 1. Objetivo
 
-Validar a proposta de modelagem dimensional para análise da atuação dos professores, com foco em disciplinas, cursos, departamentos e períodos.
+Documentar os principais pontos técnicos do modelo dimensional proposto para análise de vendas, incluindo produtos, segmentos, países, descontos, períodos e métricas financeiras.
 
-## 2. Granularidade proposta
+## 2. Proposta de granularidade
 
-Cada registro da tabela FATO_ATUACAO_PROFESSOR representa uma oferta de disciplina por um professor em determinado curso e período.
+A tabela F_VENDAS foi planejada para armazenar uma linha por registro da fonte Microsoft Financial Sample.
 
-Essa granularidade pressupõe a disponibilidade de dados que identifiquem a oferta. Caso a fonte não possua essa associação explícita, será necessário obter dados complementares ou documentar a regra utilizada para construir os registros.
+Essa granularidade precisa ser confirmada durante a importação e a carga. Também é necessário verificar se o script de carga preserva a correspondência entre cada registro da fonte e sua linha na tabela fato.
+
+A chave VendaKey identifica os registros inseridos, mas não garante, sozinha, que uma mesma linha da fonte não seja carregada mais de uma vez.
 
 ## 3. Relacionamentos dimensionais
 
-A tabela fato terá chaves estrangeiras para:
+A tabela fato possui referências previstas para as seguintes dimensões:
 
-- DIM_PROFESSOR
-- DIM_DISCIPLINA
-- DIM_CURSO
-- DIM_DEPARTAMENTO
-- DIM_DATA
+- D_PRODUTOS
+- D_DETALHES
+- D_DESCONTOS
+- D_CALENDARIO
 
-Cada dimensão deverá ter uma chave primária única. No Power BI, os relacionamentos serão configurados preferencialmente como um para muitos (1:N), da dimensão para a tabela fato.
+Cada dimensão deverá apresentar uma chave primária única. No modelo Power BI, os relacionamentos deverão ser configurados preferencialmente como um para muitos (1:N), com a dimensão no lado 1 e a tabela fato no lado N.
 
-## 4. Cuidados com o departamento
+A integridade dos relacionamentos ainda precisa ser verificada com dados importados.
 
-O departamento associado ao curso não deve ser automaticamente considerado o departamento de vínculo do professor. São informações potencialmente diferentes.
+## 4. Dimensão de produtos
 
-A DIM_DEPARTAMENTO deverá representar uma função claramente definida no modelo. Se forem necessárias as duas análises, elas deverão ser diferenciadas na modelagem.
+A dimensão D_PRODUTOS contém o nome do produto e o preço de fabricação informado pela fonte.
 
-## 5. Dimensão de datas
+A modelagem pressupõe que cada produto possa ser associado a um único preço de fabricação. Essa premissa precisa ser verificada nos dados originais.
 
-A DIM_DATA será uma dimensão calendário com uma linha por dia e uma chave DataKey no formato AAAAMMDD.
+Caso um mesmo produto apresente preços de fabricação diferentes, será necessário revisar a estrutura da dimensão e a regra de carga.
 
-A tabela fato deverá referenciar a data de oferta correspondente. Como a fonte original não fornece essa informação, as datas precisarão vir de uma fonte complementar ou ser simuladas para fins didáticos, com essa condição explicitada.
+## 5. Dimensão calendário
 
-## 6. Medidas
+A dimensão D_CALENDARIO foi planejada com uma linha por dia e uma chave DataKey no formato AAAAMMDD.
 
-- Quantidade de ofertas: contagem de registros da tabela fato, desde que cada registro represente uma oferta única.
-- Carga horária: somente deverá ser usada se houver um valor confiável na fonte ou se os valores simulados estiverem claramente identificados.
+O script atual prevê datas entre 1º de setembro de 2013 e 1º de dezembro de 2014. O intervalo precisa ser comparado com as datas efetivamente presentes na fonte.
 
-Não se deve somar a quantidade de disciplinas por linha sem verificar a granularidade, pois isso pode causar contagens duplicadas.
+A tabela fato deverá referenciar a dimensão por DataKey. A correspondência entre a data da fonte e a chave do calendário deverá ser validada durante a carga.
+
+## 6. Métricas
+
+A tabela fato prevê os seguintes campos:
+
+- UnitsSold: unidades vendidas.
+- SalePrice: preço de venda.
+- GrossSales: valor bruto das vendas.
+- Discounts: valor dos descontos.
+- Sales: valor das vendas informado pela fonte.
+- COGS: custo dos produtos vendidos.
+- Profit: lucro informado pela fonte.
+
+As métricas serão importadas da fonte original. Antes de utilizá-las em relatórios, será necessário verificar valores ausentes, tipos de dados, consistência e possíveis divergências entre os valores financeiros.
 
 ## 7. Validações antes da implementação
 
-1. Confirmar as chaves primárias e estrangeiras do modelo relacional.
-2. Verificar como professores, disciplinas e cursos estão associados.
-3. Confirmar que cada registro da fato representa uma ocorrência válida e única.
-4. Verificar se as dimensões possuem chaves únicas e sem valores inválidos.
-5. Validar a cardinalidade dos relacionamentos.
-6. Identificar claramente dados reais, complementares e simulados.
+1. Confirmar os nomes e tipos das colunas da tabela financial_sample.
+2. Conferir a quantidade de registros e a presença de valores ausentes.
+3. Verificar a unicidade dos produtos e a consistência dos preços de fabricação.
+4. Confirmar que as dimensões não apresentam chaves duplicadas.
+5. Validar a correspondência entre as chaves da tabela fato e as dimensões.
+6. Comparar o intervalo do calendário com as datas da fonte.
+7. Evitar duplicações caso os scripts de carga sejam executados repetidamente.
+8. Comparar as métricas agregadas do modelo com os valores da fonte original.
+9. Verificar a cardinalidade dos relacionamentos no Power BI.
 
-## 8. Status
+## 8. Limitações
 
-Revisão conceitual documentada. A implementação física, a validação dos dados e a construção do relatório no Power BI permanecem pendentes até serem efetivamente executadas e verificadas.
+A tabela financial_sample ainda precisa ser importada e conferida no MySQL. Os scripts SQL foram propostos, mas ainda não foram executados nem testados.
+
+O modelo do Power BI, os relacionamentos visuais e os relatórios ainda precisam ser implementados e validados.
+
+## 9. Status
+
+Esta revisão documenta os pontos de atenção da proposta de modelagem dimensional. A validação técnica definitiva depende da execução dos scripts e da comparação dos resultados com a fonte de dados.
