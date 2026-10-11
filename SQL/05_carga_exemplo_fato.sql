@@ -6,11 +6,18 @@
 -- Pré-requisitos:
 -- 1. Executar sql/01_criacao_modelo.sql.
 -- 2. Executar sql/02_popular_dimensao_data.sql.
--- 3. Importar a planilha Financial Sample para uma tabela
---    chamada financial_sample.
+-- 3. Importar a fonte para financial_sample.
 -- 4. Executar sql/03_carga_dimensoes.sql.
+--
+-- ATENÇÃO:
+-- Este script substitui o conteúdo atual da tabela fato.
+-- Execute somente após conferir a fonte e as dimensões.
 
 USE vendas_dw;
+
+START TRANSACTION;
+
+DELETE FROM F_VENDAS;
 
 INSERT INTO F_VENDAS (
     ProdutoKey,
@@ -29,7 +36,7 @@ SELECT
     p.ProdutoKey,
     det.DetalheKey,
     descnt.DescontoKey,
-    CAST(DATE_FORMAT(src.Date, '%Y%m%d') AS UNSIGNED),
+    cal.DataKey,
     src.`Units Sold`,
     src.`Sale Price`,
     src.`Gross Sales`,
@@ -47,6 +54,8 @@ JOIN D_DESCONTOS descnt
     ON descnt.DiscountBand = src.`Discount Band`
 JOIN D_CALENDARIO cal
     ON cal.DataCompleta = src.Date;
+
+COMMIT;
 
 -- Conferência resumida da tabela fato
 SELECT
