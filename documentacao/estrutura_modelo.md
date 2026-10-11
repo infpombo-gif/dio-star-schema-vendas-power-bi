@@ -1,60 +1,75 @@
-# Estrutura do Modelo Dimensional
+# Estrutura do Modelo Dimensional de Vendas
 
-## 1. FATO_ATUACAO_PROFESSOR
+## 1. F_VENDAS
 
-Tabela central do modelo, com uma linha por combinação de professor, disciplina, curso e data de oferta.
+Tabela fato central do modelo, destinada a armazenar os registros de vendas e suas métricas.
 
 | Campo | Descrição |
 |---|---|
-| ProfessorKey | Chave estrangeira para DIM_PROFESSOR |
-| DisciplinaKey | Chave estrangeira para DIM_DISCIPLINA |
-| CursoKey | Chave estrangeira para DIM_CURSO |
-| DepartamentoKey | Chave estrangeira para DIM_DEPARTAMENTO |
-| DataKey | Chave estrangeira para DIM_DATA |
-| QuantidadeDisciplinas | Medida numérica para contagem de ofertas |
-| CargaHoraria | Carga horária da oferta, se disponível |
+| VendaKey | Chave primária substituta do registro |
+| ProdutoKey | Chave estrangeira para D_PRODUTOS |
+| DetalheKey | Chave estrangeira para D_DETALHES |
+| DescontoKey | Chave estrangeira para D_DESCONTOS |
+| DataKey | Chave estrangeira para D_CALENDARIO |
+| UnitsSold | Quantidade de unidades vendidas |
+| SalePrice | Preço de venda unitário |
+| GrossSales | Valor bruto das vendas |
+| Discounts | Valor dos descontos |
+| Sales | Valor final das vendas |
+| COGS | Custo dos produtos vendidos |
+| Profit | Lucro registrado |
 
 ## 2. Dimensões
 
-### DIM_PROFESSOR
-- ProfessorKey — chave primária substituta.
-- idProfessor — identificador original.
-- DepartamentoVinculoKey — referência ao departamento de vínculo, se aplicável.
+### D_PRODUTOS
 
-### DIM_DISCIPLINA
-- DisciplinaKey — chave primária substituta.
-- idDisciplina — identificador original.
+- ProdutoKey — chave primária substituta.
+- Produto — nome do produto.
+- ManufacturingPrice — preço de fabricação informado na fonte.
 
-### DIM_CURSO
-- CursoKey — chave primária substituta.
-- idCurso — identificador original.
-- idDepartamento — referência original ao departamento responsável pelo curso.
+### D_DETALHES
 
-### DIM_DEPARTAMENTO
-- DepartamentoKey — chave primária substituta.
-- idDepartamento — identificador original.
-- Nome — nome do departamento.
-- Campus — campus do departamento.
+- DetalheKey — chave primária substituta.
+- Segment — segmento de mercado.
+- Country — país associado ao registro.
 
-### DIM_DATA
+### D_DESCONTOS
+
+- DescontoKey — chave primária substituta.
+- DiscountBand — faixa de desconto.
+
+### D_CALENDARIO
+
 - DataKey — chave primária no formato AAAAMMDD.
 - DataCompleta — data completa.
-- Dia, Mês, NomeMes, Trimestre, Semestre e Ano.
+- Dia — dia do mês.
+- NomeDiaSemana — nome do dia da semana.
+- Mes — número do mês.
+- NomeMes — nome do mês.
+- Trimestre — trimestre do ano.
+- Semestre — semestre do ano.
+- Ano — ano da data.
+- AnoMes — ano e mês no formato AAAA-MM.
 
 ## 3. Relacionamentos
 
-Todas as dimensões se relacionam com a tabela fato em uma relação de um para muitos (1:N), com a dimensão no lado 1 e a tabela fato no lado N.
+As dimensões se relacionam com a tabela fato em relações de um para muitos (1:N), com a dimensão no lado 1 e a tabela fato no lado N.
 
-- DIM_PROFESSOR → FATO_ATUACAO_PROFESSOR
-- DIM_DISCIPLINA → FATO_ATUACAO_PROFESSOR
-- DIM_CURSO → FATO_ATUACAO_PROFESSOR
-- DIM_DEPARTAMENTO → FATO_ATUACAO_PROFESSOR
-- DIM_DATA → FATO_ATUACAO_PROFESSOR
+- D_PRODUTOS → F_VENDAS
+- D_DETALHES → F_VENDAS
+- D_DESCONTOS → F_VENDAS
+- D_CALENDARIO → F_VENDAS
 
-## 4. Premissas
+## 4. Granularidade
 
-O diagrama de origem não contém datas de oferta nem carga horária. Esses dados precisam ser obtidos de outra fonte ou simulados e identificados como dados didáticos.
+A granularidade pretendida é de um registro da fonte de vendas para cada linha da tabela F_VENDAS.
 
-A granularidade proposta depende da existência de registros de oferta de disciplinas por curso, professor e data. A tabela relacional original não apresenta uma tabela específica de ofertas; portanto, essa estrutura deverá ser validada na implementação.
+A chave VendaKey identifica cada registro inserido na tabela fato. Ela não substitui um identificador original da fonte e, por si só, não impede a duplicação de registros durante cargas repetidas.
 
-As tabelas de alunos e matrículas não fazem parte do escopo analítico.
+## 5. Fonte e premissas
+
+O modelo foi planejado para utilizar o conjunto de dados Microsoft Financial Sample, com campos de produtos, segmento, país, descontos, quantidades, valores financeiros e datas.
+
+A implementação depende da importação correta da fonte para a tabela financial_sample no MySQL.
+
+Os scripts SQL representam uma proposta de implementação e ainda precisam ser executados e validados. Este documento descreve a estrutura planejada, não uma implementação comprovadamente funcional.
