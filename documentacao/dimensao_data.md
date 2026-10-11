@@ -1,18 +1,17 @@
-# Dimensão Data — DIM_DATA
+# Dimensão Calendário — D_CALENDARIO
 
 ## Objetivo
 
-Permitir a análise temporal da atuação dos professores, com agrupamentos por dia, mês, trimestre, semestre e ano.
+Permitir a análise temporal das vendas, com agrupamentos por dia, mês, trimestre, semestre e ano.
 
 ## Estrutura proposta
 
-| Campo | Tipo sugerido | Descrição |
+| Campo | Tipo | Descrição |
 |---|---|---|
 | DataKey | Inteiro | Chave no formato AAAAMMDD |
-| DataCompleta | Data | Data do calendário |
+| DataCompleta | DATE | Data completa do calendário |
 | Dia | Inteiro | Dia do mês |
 | NomeDiaSemana | Texto | Nome do dia da semana |
-| NumeroDiaSemana | Inteiro | Número do dia da semana |
 | Mes | Inteiro | Número do mês |
 | NomeMes | Texto | Nome do mês |
 | Trimestre | Inteiro | Trimestre do ano |
@@ -23,19 +22,25 @@ Permitir a análise temporal da atuação dos professores, com agrupamentos por 
 ## Regras de construção
 
 1. Criar uma linha para cada dia do intervalo definido para a análise.
-2. Usar DataKey no formato AAAAMMDD, por exemplo, 20261010.
+2. Utilizar DataKey no formato AAAAMMDD, por exemplo, 20261010.
 3. Garantir que DataCompleta não tenha datas duplicadas.
-4. Ordenar NomeMes pelo campo Mes.
-5. Ordenar NomeDiaSemana por NumeroDiaSemana.
-6. Marcar a tabela como tabela de datas no Power BI, após sua implementação.
-7. Relacionar DIM_DATA à tabela fato por DataKey.
+4. Ordenar NomeMes pelo campo Mes no Power BI.
+5. Ordenar NomeDiaSemana por um campo numérico de ordenação, caso seja necessário exibir os dias na sequência correta.
+6. Marcar a tabela como tabela de datas no Power BI após sua implementação.
+7. Relacionar D_CALENDARIO à F_VENDAS por DataKey.
 
-## Datas de oferta
+## Intervalo de datas
 
-O diagrama relacional original não contém datas de oferta de disciplinas. Para associar datas à tabela fato, será necessário obter dados complementares ou simular datas para fins didáticos.
+O script SQL atual prevê a criação do calendário entre 1º de setembro de 2013 e 1º de dezembro de 2014.
 
-Datas simuladas não devem ser apresentadas como registros históricos reais.
+Esse intervalo deve ser conferido com as datas existentes na fonte Microsoft Financial Sample. Se houver datas fora do intervalo, o calendário precisará ser ampliado.
+
+## Relacionamento com a tabela fato
+
+A dimensão D_CALENDARIO será relacionada à tabela F_VENDAS por meio de DataKey.
+
+A chave da dimensão é calculada no formato AAAAMMDD, enquanto DataCompleta armazena o tipo DATE. A correspondência entre essas colunas deve ser validada durante a carga dos dados.
 
 ## Status
 
-Estrutura conceitual documentada. A geração do calendário e a criação do relacionamento no Power BI ainda precisam ser implementadas e testadas.
+A estrutura e o script de geração do calendário foram propostos, mas ainda precisam ser executados e testados no MySQL. O relacionamento e a configuração da tabela de datas no Power BI também não foram validados.
