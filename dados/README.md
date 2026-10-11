@@ -1,37 +1,18 @@
 # Dados do Projeto
 
-## Objetivo
-
-Este diretório reúne informações e orientações relacionadas aos dados utilizados no projeto de modelagem dimensional para análise de vendas.
-
 ## Fonte de dados
 
-A fonte planejada é o conjunto de dados Microsoft Financial Sample, que contém informações sobre produtos, segmentos, países, descontos, quantidades vendidas, valores financeiros e datas.
+A fonte planejada para o projeto é o Microsoft Financial Sample, que contém informações sobre produtos, segmentos, países, descontos, quantidades vendidas, valores financeiros e datas.
 
-O conjunto de dados precisa ser importado e validado antes da execução dos scripts SQL.
+## Importação
 
-## Arquivos
+Os scripts SQL pressupõem que os dados tenham sido importados para uma tabela chamada `financial_sample` no MySQL.
 
-- `exemplo_modelo.csv`: arquivo de exemplo herdado da estrutura anterior do projeto. Seu conteúdo deve ser revisado para confirmar se ainda é relevante para o modelo de vendas.
+A importação ainda precisa ser realizada e validada. Os nomes das colunas, os tipos de dados e a quantidade de registros deverão ser conferidos antes da execução dos scripts.
 
-## Como interpretar os dados
+## Observações
 
-A tabela de origem prevista no MySQL é `financial_sample`. Os scripts de carga utilizam seus registros para preencher as dimensões e a tabela fato.
-
-Os nomes das colunas, os tipos de dados e o conteúdo efetivamente importado devem ser conferidos antes da execução.
-
-## Cuidados
-
-- O Microsoft Financial Sample é a fonte planejada, mas sua importação ainda não foi validada neste projeto.
+- O CSV de exemplo do projeto anterior foi removido por conter dados relacionados a professores.
+- Nenhum dado fictício de vendas é apresentado como se fosse proveniente da fonte original.
 - Os scripts SQL ainda precisam ser executados e testados.
-- Os resultados financeiros devem ser conferidos com os dados de origem.
-- Não afirmar que o modelo está implementado ou validado antes dos testes.
-- O relatório Power BI e o arquivo PBIX ainda não foram concluídos.
-
-## Próximas etapas
-
-1. Conferir e importar o arquivo de origem para o MySQL.
-2. Executar os scripts de criação e carga.
-3. Validar as dimensões, os relacionamentos e as métricas.
-4. Revisar o diagrama para garantir que corresponda ao modelo SQL.
-5. Desenvolver e validar o relatório no Power BI.
+- O arquivo Power BI (`.pbix`) ainda não foi concluído.
